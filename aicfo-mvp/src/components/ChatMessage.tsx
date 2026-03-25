@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Bot } from 'lucide-react';
+import { Bot, UserCheck } from 'lucide-react';
 import type { ChatMessage as ChatMessageType, VoucherDraft } from '../types';
 
 function formatTime(iso: string) {
@@ -12,9 +12,10 @@ function formatTime(iso: string) {
   return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
 }
 
-function VoucherDraftView({ draft, onConfirm }: {
+function VoucherDraftView({ draft, onConfirm, onEscalate }: {
   draft: VoucherDraft;
   onConfirm?: () => void;
+  onEscalate?: () => void;
 }) {
   const confPct = Math.round(draft.confidence * 100);
   const confColor = confPct >= 80 ? '#07C160' : confPct >= 60 ? '#FF9800' : '#E53935';
@@ -58,14 +59,46 @@ function VoucherDraftView({ draft, onConfirm }: {
         ))}
       </div>
 
-      {/* 确认按钮（全自动，直接入账） */}
-      <button
-        onClick={onConfirm}
-        className="w-full flex items-center justify-center gap-1.5 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors"
-        style={{ backgroundColor: '#07C160' }}
-      >
-        ✅ 确认入账
-      </button>
+      {/* 需要转人工 */}
+      {draft.needEscalation && (
+        <div className="mb-3 p-2 rounded-lg bg-amber-50 border border-amber-200">
+          <p className="text-xs text-amber-700">
+            <span className="font-medium">⚠️ AI置信度较低</span>
+            {draft.escalationReason && <span className="block mt-0.5">{draft.escalationReason}</span>}
+          </p>
+        </div>
+      )}
+
+      {/* 操作按钮 */}
+      <div className="flex gap-2">
+        {draft.needEscalation ? (
+          <>
+            <button
+              onClick={onConfirm}
+              className="flex-1 flex items-center justify-center gap-1.5 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors bg-gray-400 cursor-not-allowed"
+              disabled
+            >
+              需人工审核
+            </button>
+            <button
+              onClick={onEscalate}
+              className="flex-1 flex items-center justify-center gap-1.5 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors"
+              style={{ backgroundColor: '#FF6B00' }}
+            >
+              <UserCheck size={16} />
+              转人工处理
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={onConfirm}
+            className="w-full flex items-center justify-center gap-1.5 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors"
+            style={{ backgroundColor: '#07C160' }}
+          >
+            ✅ 确认入账
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -73,9 +106,10 @@ function VoucherDraftView({ draft, onConfirm }: {
 interface ChatMessageProps {
   message: ChatMessageType;
   onConfirmVoucher?: (draft: VoucherDraft) => void;
+  onEscalateToExpert?: (draft: VoucherDraft) => void;
 }
 
-export default function ChatMessageComponent({ message, onConfirmVoucher }: ChatMessageProps) {
+export default function ChatMessageComponent({ message, onConfirmVoucher, onEscalateToExpert }: ChatMessageProps) {
   const isUser = message.role === 'user';
 
   return (
@@ -134,6 +168,7 @@ export default function ChatMessageComponent({ message, onConfirmVoucher }: Chat
             <VoucherDraftView
               draft={message.voucherDraft}
               onConfirm={() => onConfirmVoucher?.(message.voucherDraft!)}
+              onEscalate={() => onEscalateToExpert?.(message.voucherDraft!)}
             />
           )}
 

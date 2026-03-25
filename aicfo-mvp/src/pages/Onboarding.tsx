@@ -1,6 +1,6 @@
 /**
  * 冷启动引导页面
- * 页面加载 → 自动用演示代码查询 → Step2确认企业信息 → 点击"激活AICFO"直接进入系统
+ * 页面加载 → 自动用演示代码查询 → Step2确认企业信息 → 点击"激活AI-CFO"直接进入系统
  */
 
 import React, { useState } from 'react';
@@ -40,6 +40,7 @@ export default function Onboarding() {
     if (enterprise) {
       navigate('/chat');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [step, setStep] = useState(1);
@@ -102,26 +103,20 @@ export default function Onboarding() {
     <div className="min-h-screen bg-[#F0F9F0] flex flex-col max-w-[430px] mx-auto">
       {/* 顶部 */}
       <div className="bg-white px-4 pt-10 pb-6">
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-10 h-10 bg-[#07C160] rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold">财</span>
-          </div>
-          <div>
-            <h1 className="font-bold text-gray-900">AICFO</h1>
-            <p className="text-xs text-gray-400">AI财税助手 · 冷启动</p>
-          </div>
+        <div className="flex flex-col items-center gap-1 mb-6 pt-4">
+          <h1 className="text-2xl font-bold" style={{ color: '#07C160' }}>AI-CFO</h1>
+          <p className="text-sm text-gray-500">会说话就可以记账</p>
         </div>
 
         {/* 步骤指示器：Step1查询 → Step2确认 */}
         <div className="flex items-center gap-2 mb-1">
           {[1, 2].map((s) => (
-            <React.Fragment key={s}>
-              <div
-                className={`flex-1 h-1.5 rounded-full transition-colors ${
-                  step >= s ? 'bg-[#07C160]' : 'bg-[#E8E8E8]'
-                }`}
-              />
-            </React.Fragment>
+            <div
+              key={s}
+              className={`flex-1 h-1.5 rounded-full transition-colors ${
+                step >= s ? 'bg-[#07C160]' : 'bg-[#E8E8E8]'
+              }`}
+            />
           ))}
         </div>
         <div className="flex">
@@ -206,7 +201,7 @@ export default function Onboarding() {
         {step === 2 && foundEnterprise && (
           <div>
             <h2 className="text-lg font-bold text-gray-900 mb-1">确认企业信息</h2>
-            <p className="text-sm text-gray-500 mb-5">核对信息，点击按钮直接激活AICFO</p>
+            <p className="text-sm text-gray-500 mb-5">核对信息，点击按钮直接激活AI-CFO</p>
 
             {/* 企业信息卡片 - 可编辑 */}
             <div className="bg-[#F7F7F7] border border-gray-100 rounded-xl p-4 mb-4">
@@ -281,7 +276,7 @@ export default function Onboarding() {
               onClick={handleActivate}
               className="w-full bg-[#07C160] hover:bg-[#06AD56] text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-base shadow-sm"
             >
-              激活AICFO，开启财税管理
+              激活AI-CFO，开启财税管理
               <ChevronRight size={20} />
             </button>
 

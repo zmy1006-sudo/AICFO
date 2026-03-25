@@ -110,7 +110,8 @@ function TaxCalcModal({ enterprise, vouchers, onClose }: {
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center" onClick={onClose}>
       <div
-        className="bg-white w-full max-w-[430px] rounded-t-2xl sm:rounded-2xl p-5 pb-8 max-h-[85vh] overflow-y-auto"
+        className="bg-white w-full max-w-[430px] rounded-t-2xl sm:rounded-2xl p-5 max-h-[85vh] overflow-y-auto"
+        style={{ paddingBottom: 'max(60px, env(safe-area-inset-bottom))' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* 标题栏 */}
@@ -236,7 +237,7 @@ export default function Calendar() {
   const info = calendarItems.filter((i) => i.level === '提示').length;
 
   return (
-    <div style={{ minHeight: '100dvh', backgroundColor: '#F7F7F7' }}>
+    <div style={{ minHeight: '100dvh', backgroundColor: '#F7F7F7', paddingBottom: '20px' }}>
       {/* 头部 */}
       <div style={{ backgroundColor: '#FFFFFF', padding: '16px 16px 12px', borderBottom: '1px solid #EDEDED' }}>
         <div className="flex items-center justify-between mb-3">
@@ -281,6 +282,16 @@ export default function Calendar() {
             </div>
           ))}
         </div>
+
+        {/* 一键算税按钮 */}
+        <button
+          onClick={() => setShowTaxCalc(true)}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white font-semibold text-sm mb-3"
+          style={{ background: 'linear-gradient(135deg, #07C160 0%, #06AD56 100%)', boxShadow: '0 2px 8px rgba(7,193,96,0.3)' }}
+        >
+          <Calculator size={18} />
+          一键算税 · 本月税费预览
+        </button>
 
         {/* 星期 */}
         <div className="grid grid-cols-7 gap-1">
@@ -368,25 +379,10 @@ export default function Calendar() {
         })}
       </div>
 
-      {/* 底部固定：一键算税按钮 */}
-      <div
-        className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-40 px-4 pb-4"
-        style={{ background: 'linear-gradient(to top, #F7F7F7 60%, transparent)' }}
-      >
-        <button
-          onClick={() => setShowTaxCalc(true)}
-          className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-semibold text-base shadow-lg"
-          style={{ background: 'linear-gradient(135deg, #07C160 0%, #06AD56 100%)', boxShadow: '0 4px 16px rgba(7,193,96,0.35)' }}
-        >
-          <Calculator size={20} />
-          一键算税 · 本月税费预览
-        </button>
-      </div>
-
       {/* 申报项详情面板 */}
       {selectedItem && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-end justify-center" onClick={() => setSelectedItem(null)}>
-          <div className="bg-white w-full max-w-[430px] rounded-t-2xl p-5 pb-8" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white w-full max-w-[430px] rounded-t-2xl p-5" style={{ paddingBottom: 'max(60px, env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
             {(() => {
               const cfg = LEVEL_CONFIG[selectedItem.level];
               const Icon = cfg.icon;

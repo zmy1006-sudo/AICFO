@@ -35,7 +35,7 @@ export default function Layout({ children }: LayoutProps) {
           >
             <span className="text-white font-bold text-xs">财</span>
           </div>
-          <span className="font-semibold text-gray-900 text-base tracking-wide">AICFO</span>
+          <span className="font-semibold text-gray-900 text-base tracking-wide">AI-CFO</span>
         </div>
       </header>
 

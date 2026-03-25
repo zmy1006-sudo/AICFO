@@ -1,16 +1,17 @@
 /**
- * AICFO - 你的AI财税专家
+ * AI-CFO - 你的AI财税专家
  * 首页/仪表盘 + AI对话记账页面
  * 全AI自动完成，无需人工审核
  */
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, Sparkles, Receipt, Calendar } from 'lucide-react';
+import { Send, Sparkles, Receipt, Calendar, Camera, Image, FileText } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { aiChat } from '../api/deepseek';
 import { generateId } from '../api/mockEngine';
 import ChatMessageComponent from '../components/ChatMessage';
+import VoiceInput from '../components/VoiceInput';
 import type { VoucherDraft } from '../types';
 
 // ==================== 工具函数 ====================
@@ -42,17 +43,17 @@ function fmt(n: number) {
 }
 
 // ==================== 常量 ====================
-const GREETING = `👋 欢迎使用AICFO！
+const GREETING = `👋 欢迎使用AI-CFO！
 
 我是你的AI财税专家，用自然语言告诉我发生了什么，我来帮你完成记账、凭证管理。
 
 你可以这样说：
-• "收了王总3万设计费"
+• "收了苏州明华企业3万设计费"
 • "付了京东货款2680元"
 • "发了工资每人1万"`;
 
 const QUICK_PROMPTS = [
-  { emoji: '💰', text: '收了XX公司3万设计费' },
+  { emoji: '💰', text: '收了XX苏州公司3万设计费' },
   { emoji: '💸', text: '付了京东货款2680元' },
   { emoji: '👥', text: '发了工资每人1万' },
   { emoji: '🏢', text: '公户转私人2万' },
@@ -72,12 +73,17 @@ export default function Chat() {
     currentSessionId,
     setCurrentSession,
     vouchers,
+    addExpertConversation,
+    setShowExpertOption,
   } = useAppStore();
 
   const stats = calcStats(vouchers);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [showDash, setShowDash] = useState(true);
 
   // 初始化会话
@@ -100,10 +106,11 @@ export default function Chat() {
   // 监听发票OCR跳转
   useEffect(() => {
     function handleOcr(e: CustomEvent<{ text: string }>) {
-      setInput(e.detail.text);
+      handleOcrMessage(e.detail.text);
     }
     window.addEventListener('aicfo-ocr-voucher', handleOcr as EventListener);
     return () => window.removeEventListener('aicfo-ocr-voucher', handleOcr as EventListener);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ==================== AI处理（全自动）====================
@@ -185,6 +192,33 @@ export default function Chat() {
     });
   }
 
+  function handleEscalate(draft: VoucherDraft) {
+    addExpertConversation({
+      messages: [
+        {
+          id: generateId(),
+          sessionId: currentSessionId || generateId(),
+          role: 'user',
+          content: `需要人工处理：${draft.summary}，金额：¥${draft.amount.toLocaleString()}`,
+          createdAt: new Date().toISOString(),
+        },
+      ],
+      status: '待回复',
+    });
+    setShowExpertOption(true, draft);
+    addMessage({
+      sessionId: currentSessionId || generateId(),
+      role: 'assistant',
+      content: `👨‍💼 已为您转接人工专家！\n\n您的凭证草稿已提交，人工专家将在1小时内回复。\n您可以继续其他操作，稍后我会提醒您专家的回复。`,
+    });
+  }
+
+  function handleOcrMessage(text: string) {
+    setInput(text);
+    setShowDash(false);
+    doAiProcess(text);
+  }
+
   return (
     <div className="flex flex-col" style={{ height: '100dvh' }}>
       {/* 固定顶部：系统名称 */}
@@ -196,7 +230,7 @@ export default function Chat() {
           <span className="text-white font-bold text-sm">财</span>
         </div>
         <div className="flex-1">
-          <div className="font-semibold text-sm" style={{ color: '#1A1A1A' }}>AICFO</div>
+          <div className="font-semibold text-sm" style={{ color: '#1A1A1A' }}>AI-CFO</div>
           <div className="text-[10px]" style={{ color: '#07C160' }}>你的AI财税专家</div>
         </div>
         {enterprise && (
@@ -253,6 +287,7 @@ export default function Chat() {
             key={msg.id}
             message={msg}
             onConfirmVoucher={handleConfirm}
+            onEscalateToExpert={handleEscalate}
           />
         ))}
         {isTyping && (
@@ -274,48 +309,133 @@ export default function Chat() {
         <div ref={bottomRef} />
       </div>
 
-      {/* 快捷输入区 */}
-      <div
-        className="shrink-0"
-        style={{ backgroundColor: '#FFFFFF', borderTop: '1px solid #EDEDED', paddingBottom: 'calc(8px + env(safe-area-inset-bottom))' }}
-      >
-        <div className="flex gap-1.5 px-3 pt-2.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-          {QUICK_PROMPTS.map(({ emoji, text }) => (
-            <button
-              key={text}
-              onClick={() => handleQuickSend(text)}
-              disabled={isTyping}
-              className="shrink-0 text-xs rounded-full px-3 py-1.5"
-              style={{
-                backgroundColor: '#F0F9F0',
-                color: '#07C160',
-                border: '1px solid #C8E6C9',
-                opacity: isTyping ? 0.5 : 1,
-              }}
-            >
-              {emoji} {text.length > 12 ? text.slice(0, 12) + '…' : text}
-            </button>
-          ))}
+      {/* 附件菜单弹窗 */}
+      {showAttachMenu && (
+        <div className="fixed inset-0 bg-black/30 z-50" onClick={() => setShowAttachMenu(false)}>
+          <div 
+            className="absolute left-4 bottom-[70px] bg-white rounded-2xl p-4 shadow-lg"
+            style={{ width: '280px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-sm text-gray-500 mb-3">选择上传方式</p>
+            <div className="grid grid-cols-3 gap-3">
+              <button
+                onClick={() => { setShowAttachMenu(false); fileInputRef.current?.click(); }}
+                className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                <div className="w-12 h-12 rounded-full bg-[#07C160]/10 flex items-center justify-center">
+                  <Camera size={24} className="text-[#07C160]" />
+                </div>
+                <span className="text-xs text-gray-600">拍照</span>
+              </button>
+              <button
+                onClick={() => { setShowAttachMenu(false); fileInputRef.current?.click(); }}
+                className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                <div className="w-12 h-12 rounded-full bg-[#07C160]/10 flex items-center justify-center">
+                  <Image size={24} className="text-[#07C160]" />
+                </div>
+                <span className="text-xs text-gray-600">相册</span>
+              </button>
+              <button
+                onClick={() => { setShowAttachMenu(false); fileInputRef.current?.click(); }}
+                className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                <div className="w-12 h-12 rounded-full bg-[#07C160]/10 flex items-center justify-center">
+                  <FileText size={24} className="text-[#07C160]" />
+                </div>
+                <span className="text-xs text-gray-600">文件</span>
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="flex items-end gap-2 px-3 pt-2 pb-2.5">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-            placeholder="说说你今天发生了什么…"
-            rows={1}
-            className="flex-1 resize-none rounded-2xl px-4 py-2.5 text-sm"
-            style={{ backgroundColor: '#F7F7F7', border: '1px solid #E0E0E0', color: '#1A1A1A', minHeight: '44px', maxHeight: '96px', outline: 'none' }}
-            onFocus={(e) => { e.target.style.borderColor = '#07C160'; e.target.style.boxShadow = '0 0 0 2px #C8E6C9'; }}
-            onBlur={(e) => { e.target.style.borderColor = '#E0E0E0'; e.target.style.boxShadow = 'none'; }}
-          />
+      )}
+
+      {/* 文件处理中提示 */}
+      {isProcessingFile && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-6 text-center">
+            <div className="w-12 h-12 rounded-full bg-[#07C160]/10 flex items-center justify-center mx-auto mb-3">
+              <div className="w-6 h-6 border-2 border-[#07C160] border-t-transparent rounded-full animate-spin" />
+            </div>
+            <p className="text-sm text-gray-800">正在识别文件...</p>
+            <p className="text-xs text-gray-400 mt-1">AI正在提取财务数据</p>
+          </div>
+        </div>
+      )}
+
+      {/* 隐藏的文件输入 */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,application/pdf"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) {
+            setIsProcessingFile(true);
+            // 模拟AI识别过程
+            setTimeout(() => {
+              setIsProcessingFile(false);
+              // 根据文件类型生成模拟识别结果
+              const mockResult = file.type.includes('pdf') 
+                ? `识别到PDF文件：${file.name}\n已提取发票信息：金额 ¥2,680，税额 ¥154.53`
+                : `识别到图片：${file.name}\n已提取发票信息：金额 ¥3,000，税额 ¥169.81`;
+              setInput(mockResult);
+            }, 2000);
+          }
+        }}
+      />
+
+      {/* 输入区域 - 微信风格 */}
+      <div
+        className="shrink-0 flex items-center justify-center"
+        style={{ backgroundColor: '#F7F7F7', borderTop: '1px solid #E5E5E5', padding: '2px 8px', paddingBottom: 'calc(2px + env(safe-area-inset-bottom))', minHeight: '44px' }}
+      >
+        <div className="flex items-center gap-2 w-full">
+          {/* 左侧 + 号按钮 */}
+          <button
+            onClick={() => setShowAttachMenu(true)}
+            className="w-[28px] h-[28px] rounded-full flex items-center justify-center shrink-0"
+            style={{ backgroundColor: '#FFFFFF', border: '1px solid #D9D9D9' }}
+          >
+            <span style={{ color: '#7F7F7F', fontSize: '18px', lineHeight: '1' }}>+</span>
+          </button>
+          
+          {/* 输入框 */}
+          <div className="flex-1 relative flex items-center">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+              placeholder="发送消息..."
+              rows={1}
+              className="w-full resize-none rounded-[4px] px-3 text-[15px]"
+              style={{ 
+                backgroundColor: '#FFFFFF', 
+                border: 'none',
+                color: '#1A1A1A', 
+                minHeight: '36px', 
+                maxHeight: '80px',
+                outline: 'none',
+                lineHeight: '20px',
+                padding: '8px 8px'
+              }}
+            />
+          </div>
+          
+          {/* 发送按钮 - 微信绿色胶囊样式 */}
           <button
             onClick={handleSend}
             disabled={!input.trim() || isTyping}
-            className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
-            style={{ backgroundColor: input.trim() && !isTyping ? '#07C160' : '#CCCCCC', color: '#FFFFFF' }}
+            className="px-[12px] rounded-[4px] text-[13px] font-medium shrink-0 flex items-center justify-center"
+            style={{ 
+              backgroundColor: input.trim() && !isTyping ? '#07C160' : '#E0E0E0', 
+              color: input.trim() && !isTyping ? '#FFFFFF' : '#999999',
+              height: '36px'
+            }}
           >
-            <Send size={18} />
+            发送
           </button>
         </div>
       </div>

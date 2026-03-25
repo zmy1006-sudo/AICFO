@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Building2, Phone, HelpCircle, Settings, LogOut, ChevronRight,
   MessageSquare, ScanLine, RotateCcw, AlertTriangle, BarChart2, FileText,
+  Calculator, Upload, Archive, FolderOpen, X,
 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 
@@ -16,6 +17,10 @@ export default function Profile() {
   const { enterprise, userName, vouchers, isDemo, isOnboarded } = useAppStore();
   const [showOcrTip, setShowOcrTip] = useState(false);
   const [showResetTip, setShowResetTip] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackText, setFeedbackText] = useState('');
 
   const confirmedCount = vouchers.filter((v) => v.status === '已入账').length;
   const totalAmount = vouchers.reduce((s, v) => s + v.amount, 0);
@@ -70,7 +75,7 @@ export default function Profile() {
           <div>
             <p className="font-semibold text-lg">{userName || '未设置姓名'}</p>
             <p className="text-[#95EC69] text-xs mt-0.5">
-              {isDemo ? '体验用户' : 'AICFO用户'}
+              {isDemo ? '体验用户' : 'AI-CFO用户'}
             </p>
           </div>
         </div>
@@ -184,12 +189,38 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* 更多工具入口 */}
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-4">
+          <p className="px-4 py-3 text-sm font-medium text-gray-700 border-b border-gray-50">更多工具</p>
+          {[
+            { icon: Calculator, label: '工资算薪', sub: '个税·社保·年终奖', path: '/salary' },
+            { icon: Upload, label: '数据导入', sub: 'Excel·用友·金蝶', path: '/import' },
+            { icon: Archive, label: '档案管理', sub: '凭证汇总册·到期提醒', path: '/archive' },
+            { icon: FolderOpen, label: '凭证列表', sub: '全部凭证记录', path: '/vouchers' },
+          ].map(({ icon: Icon, label, sub, path }) => (
+            <button
+              key={label}
+              onClick={() => navigate(path)}
+              className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F7F7F7] transition-colors border-b border-gray-50 last:border-0"
+            >
+              <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                <Icon size={16} className="text-gray-500" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-medium text-gray-800">{label}</p>
+                <p className="text-xs text-gray-400">{sub}</p>
+              </div>
+              <ChevronRight size={16} className="text-gray-300" />
+            </button>
+          ))}
+        </div>
+
         {/* 功能菜单 */}
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-4">
           {[
-            { icon: HelpCircle, label: '帮助与反馈', action: () => {} },
-            { icon: Phone, label: '联系客服', action: () => {} },
-            { icon: MessageSquare, label: '咨询专家', action: () => {} },
+            { icon: HelpCircle, label: '帮助与反馈', action: () => setShowHelpModal(true) },
+            { icon: Phone, label: '联系客服', action: () => setShowContactModal(true) },
+            { icon: MessageSquare, label: '咨询专家', action: () => setShowContactModal(true) },
           ].map(({ icon: Icon, label, action }) => (
             <button
               key={label}
@@ -234,7 +265,7 @@ export default function Profile() {
           切换企业
         </button>
 
-        <p className="text-center text-xs text-gray-300 mt-6">AICFO v1.0.0 MVP</p>
+        <p className="text-center text-xs text-gray-300 mt-6">AI-CFO v1.0.0 MVP</p>
       </div>
 
       {/* OCR提示弹窗 */}
@@ -249,6 +280,115 @@ export default function Profile() {
               className="w-full py-2.5 bg-[#07C160] text-white text-sm font-medium rounded-full"
             >
               我知道了
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 帮助与反馈弹窗 */}
+      {showHelpModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50" onClick={() => setShowHelpModal(false)}>
+          <div className="bg-white w-full max-w-md rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto" style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold text-gray-900">帮助与反馈</h2>
+              <button onClick={() => setShowHelpModal(false)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                <X size={16} className="text-gray-500" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <button
+                onClick={() => { setShowHelpModal(false); setShowFeedbackModal(true); }}
+                className="w-full flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+              >
+                <div className="w-10 h-10 bg-[#07C160]/10 rounded-full flex items-center justify-center">
+                  <FileText size={18} className="text-[#07C160]" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-medium text-gray-800">意见反馈</p>
+                  <p className="text-xs text-gray-400">提交您的建议与问题</p>
+                </div>
+                <ChevronRight size={16} className="text-gray-300" />
+              </button>
+              <button
+                onClick={() => { setShowHelpModal(false); window.open('https://ai-cfo.com/manual', '_blank'); }}
+                className="w-full flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+              >
+                <div className="w-10 h-10 bg-[#07C160]/10 rounded-full flex items-center justify-center">
+                  <HelpCircle size={18} className="text-[#07C160]" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-medium text-gray-800">用户手册</p>
+                  <p className="text-xs text-gray-400">查看完整使用指南</p>
+                </div>
+                <ChevronRight size={16} className="text-gray-300" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 意见反馈弹窗 */}
+      {showFeedbackModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50" onClick={() => setShowFeedbackModal(false)}>
+          <div className="bg-white w-full max-w-md rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto" style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold text-gray-900">意见反馈</h2>
+              <button onClick={() => setShowFeedbackModal(false)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                <X size={16} className="text-gray-500" />
+              </button>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">您的反馈将帮助我们做得更好</p>
+            <textarea
+              value={feedbackText}
+              onChange={(e) => setFeedbackText(e.target.value)}
+              placeholder="请输入您的意见或建议..."
+              rows={5}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:border-[#07C160]"
+            />
+            <button
+              onClick={() => {
+                 if (feedbackText.trim()) {
+                   useAppStore.getState().addFeedback(feedbackText);
+                   setFeedbackText('');
+                   setShowFeedbackModal(false);
+                   alert('感谢您的反馈！');
+                 }
+               }}
+              className="w-full mt-4 py-3 bg-[#07C160] text-white text-sm font-medium rounded-xl"
+            >
+              提交反馈
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 联系客服/咨询专家弹窗 */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50" onClick={() => setShowContactModal(false)}>
+          <div className="bg-white w-full max-w-md rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto" style={{ paddingBottom: 'calc(24px + env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold text-gray-900">联系我们</h2>
+              <button onClick={() => setShowContactModal(false)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                <X size={16} className="text-gray-500" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="p-4 bg-gray-50 rounded-xl">
+                <p className="text-sm font-medium text-gray-800 mb-2">联系客服</p>
+                <p className="text-sm text-gray-600">电话：400-888-8888</p>
+                <p className="text-sm text-gray-600">邮箱：service@ai-cfo.com</p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-xl">
+                <p className="text-sm font-medium text-gray-800 mb-2">咨询专家</p>
+                <p className="text-sm text-gray-600">电话：400-888-8889</p>
+                <p className="text-sm text-gray-600">邮箱：expert@ai-cfo.com</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowContactModal(false)}
+              className="w-full mt-6 py-3 bg-gray-100 text-gray-600 text-sm font-medium rounded-xl"
+            >
+              关闭
             </button>
           </div>
         </div>

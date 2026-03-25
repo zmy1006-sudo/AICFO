@@ -1,5 +1,5 @@
 /**
- * AICFO MVP - 应用入口
+ * AI-CFO MVP - 应用入口
  * 路由配置 + 权限控制
  */
 
@@ -14,6 +14,10 @@ import Profile from './pages/Profile';
 import Reports from './pages/Reports';
 import InvoiceOCR from './pages/InvoiceOCR';
 import Contracts from './pages/Contracts';
+import Salary from './pages/Salary';
+import Import from './pages/Import';
+import Archive from './pages/Archive';
+import Tools from './pages/Tools';
 import { useAppStore } from './store/useAppStore';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -38,6 +42,10 @@ export default function App() {
         <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
         <Route path="/invoice" element={<ProtectedRoute><InvoiceOCR /></ProtectedRoute>} />
         <Route path="/contracts" element={<ProtectedRoute><Contracts /></ProtectedRoute>} />
+        <Route path="/salary" element={<ProtectedRoute><Salary /></ProtectedRoute>} />
+        <Route path="/import" element={<ProtectedRoute><Import /></ProtectedRoute>} />
+        <Route path="/archive" element={<ProtectedRoute><Archive /></ProtectedRoute>} />
+        <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
 
         {/* 默认跳转 */}
         <Route path="*" element={<Navigate to="/onboarding" replace />} />

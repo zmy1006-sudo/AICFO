@@ -10,9 +10,8 @@
 
 import type { VoucherDraft, Direction, ParseResult } from '../types';
 
-// ⚠️ 替换为你的 DeepSeek API Key
-const DEEPSEEK_API_KEY = 'sk-7739e25c43254a7c81310de60a1d1014';
-const DEEPSEEK_BASE_URL = 'https://api.deepseek.com/v1';
+const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || '';
+const DEEPSEEK_BASE_URL = import.meta.env.VITE_DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1';
 
 // ==================== 凭证科目白名单 ====================
 const ACCOUNT_WHITELIST = [
@@ -176,12 +175,17 @@ export function convertToParseResult(aiResult: AIServiceResult): ParseResult {
  * 统一入口：AI记账（接入真实API或降级到Mock）
  */
 export async function aiChat(userInput: string): Promise<ParseResult> {
+  if (!DEEPSEEK_API_KEY) {
+    console.warn('DeepSeek API Key未配置，降级到Mock模式');
+    const { parseUserInput } = await import('./mockEngine');
+    return parseUserInput(userInput);
+  }
+
   try {
     const aiResult = await callDeepSeek(userInput);
     return convertToParseResult(aiResult);
   } catch (error) {
     console.error('DeepSeek API调用失败，降级到Mock：', error);
-    // 降级：导入并使用 Mock 规则引擎
     const { parseUserInput } = await import('./mockEngine');
     return parseUserInput(userInput);
   }
