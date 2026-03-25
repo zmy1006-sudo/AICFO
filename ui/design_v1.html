@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AICFO UI Design V1 — 高保真原型</title>
+</head>
+<body>
+
+<!--
+ * ============================================================
+ * AICFO UI Design V1 — 高保真原型
+ * ============================================================
+ *
+ * 【色值表】
+ * --primary:     #3B5BDB  可信蓝  标题、重要按钮
+ * --secondary:   #495057  专业灰  正文、标签
+ * --accent:      #F59F00  暖橙    预警、重要提示
+ * --success:     #37B24D  成功绿  申报成功、入账完成
+ * --danger:      #E03131  危险红  紧急预警、申报截止
+ * --bg:          #F8F9FA  背景浅灰
+ * --card:        #FFFFFF  卡片白
+ * --border:      #DEE2E6  边框灰
+ *
+ * 【字体规范】
+ * 标题: 20px bold
+ * 正文: 16px
+ * 辅助: 14px
+ *
+ * 【触控规范】
+ * 触控目标最小高度 ≥44px
+ * 间距系统: 8px 网格
+ *
+ * 【设计尺寸】
+ * 手机端参考宽度: 375px
+ * ============================================================
+ */
+
+:root {
+  --primary:      #3B5BDB;
+  --primary-light:#5C7CFA;
+  --primary-dark: #2C4AC0;
+  --secondary:    #495057;
+  --accent:       #F59F00;
+  --success:      #37B24D;
+  --success-light:#51CF66;
+  --danger:       #E03131;
+  --bg:           #F8F9FA;
+  --card:         #FFFFFF;
+  --border:       #DEE2E6;
+  --text-muted:   #868E96;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --nav-h: 56px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  background: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   页面容器
+   ============================================================ */
+.page-wrap {
+  width: 375px;
+  min-height: 667px;
+  max-height: 812px;
+  background: var(--bg);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.page-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.page-scroll::-webkit-scrollbar { display: none; }
+
+/* ============================================================
+   导航栏
+   ============================================================ */
+.nav {
+  height: var(--nav-h);
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.nav-ghost {
+  background: transparent;
+  border-bottom: none;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+}
+
+.nav-back,
+.nav-action {
+  width: 44px; height: 44px;
+  border: none; background: none;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.nav-back:active,
+.nav-action:active { background: var(--bg); }
+
+.nav-back svg,
+.nav-action svg { width: 24px; height: 24px; color: var(--secondary); }
+
+.nav-title {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px;
+}
+
+/* ============================================================
+   通用按钮
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 44px; padding: 10px 20px;
+  border: none; border-radius: var(--radius-md);
+  font-size: 16px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  -webkit-user-select: none; user-select: none;
+  position: relative; overflow: hidden;
+  white-space: nowrap;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-p {
+  background: var(--primary); color: #fff;
+  box-shadow: 0 4px 12px rgba(59,91,219,0.35);
+}
+.btn-p:hover { background: var(--primary-dark); }
+.btn-p:disabled { background: #A0B0F5; cursor: not-allowed; box-shadow: none; transform: none; }
+.btn-p.loading { color: transparent; }
+.btn-p.loading::after {
+  content: ''; position: absolute;
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.4);
+  border-top-color: #fff; border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.btn-s {
+  background: var(--card); color: var(--primary);
+  border: 1.5px solid var(--primary);
+}
+.btn-s:hover { background: #EEF1FF; }
+.btn-s:disabled { color: #A0B0F5; border-color: #C0D0F5; cursor: not-allowed; transform: none; }
+
+.btn-g {
+  background: transparent; color: var(--secondary);
+}
+.btn-g:hover { background: var(--bg); }
+
+.btn-full { width: 100%; }
+.btn-lg { min-height: 52px; font-size: 17px; border-radius: var(--radius-lg); }
+.btn-sm { min-height: 36px; padding: 6px 14px; font-size: 14px; }
+.btn-danger { background: var(--danger); color: #fff; box-shadow: 0 4px 12px rgba(224,49,49,0.3); }
+.btn-danger:hover { background: #C92A2A; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   表单元素
+   ============================================================ */
+.lbl {
+  display: block;
+  font-size: 14px; color: var(--secondary);
+  margin-bottom: 6px; font-weight: 500;
+}
+
+.inp {
+  width: 100%; min-height: 48px; padding: 12px 16px;
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--radius-md); font-size: 16px;
+  color: #1a1a2e; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.inp:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,91,219,0.12); }
+.inp::placeholder { color: var(--text-muted); }
+.inp.err { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(224,49,49,0.10); }
+.inp:disabled { background: var(--bg); color: var(--text-muted); cursor: not-allowed; }
+
+.err-msg { font-size: 12px; color: var(--danger); margin-top: 4px; padding-left: 4px; }
+
+/* ============================================================
+   卡片
+   ============================================================ */
+.c {
+  background: var(--card); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm); overflow: hidden;
+}
+
+/* ============================================================
+   标签 Badge
+   ============================================================ */
+.bdg {
+  display: inline-flex; align-items: center; padding: 3px 10px;
+  border-radius: 100px; font-size: 12px; font-weight: 600; white-space: nowrap;
+}
+.bdg-b { background: #EEF1FF; color: var(--primary); }
+.bdg-o { background: #FFF8E1; color: #E67700; }
+.bdg-g { background: #EBFBEE; color: #2B8A3E; }
+.bdg-r { background: #FFF5F5; color: var(--danger); }
+.bdg-gray { background: var(--bg); color: var(--secondary); }
+.bdg-w { background: rgba(255,255,255,0.25); color: #fff; border: 1px solid rgba(255,255,255,0.35); }
+
+/* ============================================================
+   步骤指示器
+   ============================================================ */
+.steps {
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px 0 16px; gap: 0;
+}
+.sd {
+  width: 8px; height: 8px; border-radius: 4px;
+  background: var(--border); transition: all 0.3s;
+}
+.sd.on { background: var(--primary); width: 24px; border-radius: 4px; }
+.sd.done { background: var(--success); }
+.sc {
+  width: 36px; height: 2px; background: var(--border); transition: background 0.3s;
+}
+.sc.done { background: var(--success); }
+
+/* ============================================================
+   工具图标 SVG (inline)
+   ============================================================ */
+.ic { display: block; }
+
+/* ============================================================
+   页面标签
+   ============================================================ */
+.page-label {
+  text-align: center;
+  width: 375px;
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+  margin-top: 12px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   PAGE 1: 冷启动引导
+   ============================================================ */
+.onboard {
+  background: linear-gradient(165deg, #EEF1FF 0%, var(--bg) 55%);
+  min-height: 100%; display: flex; flex-direction: column;
+}
+
+.ob-hero { padding: 40px 32px 28px; text-align: center; }
+
+.ob-logo {
+  width: 72px; height: 72px; border-radius: 20px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px; box-shadow: 0 8px 24px rgba(59,91,219,0.30);
+}
+
+.ob-title { font-size: 26px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
+.ob-sub  { font-size: 16px; color: var(--secondary); line-height: 1.6; }
+
+.ob-body { flex: 1; padding: 0 24px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+.ob-divider {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 14px; color: var(--text-muted);
+}
+.ob-divider::before, .ob-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+.scan-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; min-height: 48px; padding: 12px;
+  background: var(--card); border: 1.5px dashed var(--primary);
+  border-radius: var(--radius-md); color: var(--primary);
+  font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.scan-btn:hover { background: #EEF1FF; }
+.scan-btn:active { transform: scale(0.98); }
+
+/* 企业信息确认 */
+.cinfo-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.cinfo-row:last-child { border-bottom: none; }
+.cinfo-lbl { font-size: 14px; color: var(--text-muted); }
+.cinfo-val { font-size: 16px; color: #1a1a2e; font-weight: 500; text-align: right; max-width: 60%; word-break: break-all; }
+
+/* 初始化方式 */
+.mth-list { display: flex; flex-direction: column; gap: 12px; }
+
+.mth-card {
+  background: var(--card); border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg); padding: 16px;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.mth-card:hover { border-color: var(--primary-light); box-shadow: var(--shadow-sm); }
+.mth-card.sel { border-color: var(--primary); background: #EEF1FF; }
+
+.mth-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.mth-icon svg { width: 22px; height: 22px; }
+.mth-icon.b { background: #EEF1FF; color: var(--primary); }
+.mth-icon.o { background: #FFF8E1; color: #E67700; }
+.mth-icon.g { background: #EBFBEE; color: #2B8A3E; }
+
+.mth-txt { flex: 1; }
+.mth-ttl { font-size: 16px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
+.mth-desc { font-size: 14px; color: var(--secondary); line-height: 1.5; }
+
+.mth-chk {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--border); margin-top: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.mth-card.sel .mth-chk { background: var(--primary); border-color: var(--primary); }
+.mth-card.sel .mth-chk::after {
+  content: ''; width: 6px; height: 6px; border-radius: 50%; background: white;
+}
+
+/* ============================================================
+   PAGE 2: AI对话页
+   ============================================================ */
+.chat-page { display: flex; flex-direction: column; height: 100%; background: var(--bg); }
+
+.chat-hdr {
+  background: var(--card); padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.chat-co { font-size: 16px; font-weight: 600; color: #1a1a2e; }
+.chat-body {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.chat-body::-webkit-scrollbar { display: none; }
+
+.date-div {
+  text-align: center; font-size: 12px; color: var(--text-muted);
+  padding: 6px 0; position: relative;
+}
+.date-div span { background: var(--bg); padding: 0 10px; position: relative; z-index: 1; }
+.date-div::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 50%;
+  height: 1px; background: var(--border);
+}
+
+.br { display: flex; align-items: flex-end; gap: 8px; }
+.br.u { flex-direction: row-reverse; }
+
+.av { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; }
+.av-ai {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  display: flex; align-items: center; justify-content: center;
+}
+.av-u { background: linear-gradient(135deg, #868E96, #ADB5BD); }
+
+.bub { max-width: 74%; display: flex; flex-direction: column; gap: 2px; }
+.bub-txt {
+  padding: 10px 14px; border-radius: 16px;
+  font-size: 16px; line-height: 1.65; color: #1a1a2e; word-break: break-word;
+}
+.br.ai .bub-txt { background: var(--card); border-bottom-left-radius: 4px; box-shadow: var(--shadow-sm); }
+.br.u .bub-txt  { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+
+/* 凭证草稿 */
+.vd-card {
+  background: var(--card); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm); overflow: hidden; margin-top: 8px; min-width: 270px;
+}
+.vd-hdr {
+  background: linear-gradient(135deg, #EEF1FF, #F5F7FF); padding: 9px 14px;
+  font-size: 12px; font-weight: 600; color: var(--primary);
+  display: flex; align-items: center; gap: 6px;
+}
+.vd-body { padding: 10px 14px; }
+.vd-row { display: flex; align-items: center; padding: 5px 0; gap: 8px; }
+.vd-row + .vd-row { border-top: 1px dashed var(--border); }
+.dc-tag { padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; min-width: 22px; text-align: center; }
+.dc-tag.dr { background: #FFF5F5; color: var(--danger); }
+.dc-tag.cr { background: #EBFBEE; color: #2B8A3E; }
+.vd-acct { font-size: 14px; color: var(--secondary); flex: 1; }
+.vd-amt  { font-size: 14px; font-weight: 700; color: #1a1a2e; }
+.vd-ft { padding: 8px 14px; border-top: 1px solid var(--border); background: #FAFBFF; display: flex; gap: 8px; }
+.vd-ft .btn { flex: 1; min-height: 34px; font-size: 14px; }
+
+/* 打字动画 */
+.typing { display: flex; align-items: center; gap: 5px; padding: 13px 16px; background: var(--card); border-radius: 16px; border-bottom-left-radius: 4px; box-shadow: var(--shadow-sm); }
+.td { width: 7px; height: 7px; border-radius: 50%; background: var(--text-muted); animation: tyB 1.4s infinite; }
+.td:nth(2) { animation-delay: 0.2s; }
+.td:nth-child(3) { animation-delay: 0.4s; }
+@keyframes tyB { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-6px);opacity:1} }
+
+/* 空状态 */
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 24px; gap: 12px; text-align: center; }
+.empty-icon { width: 64px; height: 64px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.empty-state h3 { font-size: 17px; font-weight: 600; color: #1a1a2e; }
+.empty-state p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+/* 底部输入 */
+.chat-ft {
+  background: var(--card); border-top: 1px solid var(--border);
+  padding: 8px 12px; display: flex; align-items: flex-end; gap: 8px; flex-shrink: 0;
+}
+.chat-inp-wrap {
+  flex: 1; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg); padding: 6px 12px;
+  display: flex; align-items: flex-end; transition: border-color 0.2s;
+}
+.chat-inp-wrap:focus-within { border-color: var(--primary); background: var(--card); }
+.chat-inp {
+  flex: 1; border: none; background: transparent; font-size: 16px;
+  color: #1a1a2e; outline: none; resize: none;
+  max-height: 120px; line-height: 1.5; padding: 4px 0;
+}
+.chat-inp::placeholder { color: var(--text-muted); }
+.cibtn {
+  width: 44px; height: 44px; border: none; background: none;
+  cursor: pointer; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; transition: background 0.2s; flex-shrink: 0;
+}
+.cibtn:active { background: var(--bg); }
+.cibtn svg { width: 24px; height: 24px; color: var(--secondary); }
+.cibtn.send { background: var(--primary); box-shadow: 0 4px 10px rgba(59,91,219,0.3); }
+.cibtn.send svg { color: white; }
+.cibtn.send:active { background: var(--primary-dark); }
+
+/* ============================================================
+   PAGE 3: 凭证确认页
+   ============================================================ */
+.vs-page { background: var(--bg); min-height: 100%; }
+
+.vs-status-bar {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
+}
+.vs-status-bar .lbl { color: rgba(255,255,255,0.7); margin-bottom: 3px; }
+.vs-status-bar .val { font-size: 18px; font-weight: 700; color: white; }
+.vs-no { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+
+/* 状态流转 */
+.sts-flow {
+  display: flex; align-items: center; padding: 20px 24px;
+  background: var(--card); gap: 0;
+}
+.sts-stp { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; position: relative; }
+.sts-stp:not(:last-child)::after {
+  content: ''; position: absolute; top: 13px; left: 60%; right: -40%;
+  height: 2px; background: var(--border);
+}
+.sts-stp.done::after { background: var(--success); }
+.sts-ic {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--border); display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: white; position: relative; z-index: 1;
+}
+.sts-stp.done .sts-ic { background: var(--success); }
+.sts-stp.on .sts-ic { background: var(--primary); box-shadow: 0 0 0 3px rgba(59,91,219,0.2); }
+.sts-lbl { font-size: 11px; color: var(--text-muted); text-align: center; }
+.sts-stp.done .sts-lbl, .sts-stp.on .sts-lbl { color: var(--secondary); font-weight: 600; }
+
+/* 凭证表单 */
+.vs-form { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.vs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.vs-row.triple { grid-template-columns: 1fr; }
+.ffd { display: flex; flex-direction: column; gap: 4px; }
+.ffd.f { grid-column: 1 / -1; }
+.flbl { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+.fval {
+  min-height: 40px; padding: 8px 12px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 16px; color: #1a1a2e;
+  display: flex; align-items: center;
+}
+.fval.ed { background: var(--card); border-color: var(--primary-light); cursor: pointer; justify-content: space-between; }
+.fval.ed svg { width: 16px; height: 16px; color: var(--text-muted); flex-shrink: 0; }
+
+/* 借贷明细 */
+.dc-sec { background: var(--card); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+.dc-hd {
+  display: grid; grid-template-columns: 40px 1fr 1fr;
+  padding: 9px 14px; background: var(--bg); border-bottom: 1px solid var(--border);
+  font-size: 12px; font-weight: 600; color: var(--text-muted);
+}
+.dc-row { display: grid; grid-template-columns: 40px 1fr 1fr; padding: 9px 14px; border-bottom: 1px solid var(--border); align-items: center; }
+.dc-row:last-child { border-bottom: none; }
+.dc-tt { font-size: 11px; font-weight: 700; text-align: center; padding: 2px 4px; border-radius: 4px; }
+.dc-tt.dr { color: var(--danger); background: #FFF5F5; }
+.dc-tt.cr { color: #2B8A3E; background: #EBFBEE; }
+.dc-ac { font-size: 14px; color: var(--secondary); padding-left: 6px; }
+.dc-am { font-size: 14px; font-weight: 700; color: #1a1a2e; text-align: right; }
+.dc-total { display: grid; grid-template-columns: 40px 1fr 1fr; padding: 9px 14px; background: #FAFBFF; font-size: 14px; font-weight: 600; }
+.dc-total .dc-am { color: var(--primary); }
+
+/* 附件 */
+.attach {
+  background: var(--card); border: 1.5px dashed var(--border);
+  border-radius: var(--radius-md); padding: 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer; transition: all 0.2s;
+}
+.attach:hover { border-color: var(--primary-light); background: #FAFBFF; }
+.attach span { font-size: 14px; color: var(--text-muted); }
+
+/* 底部操作 */
+.vs-ft { padding: 12px 16px 28px; display: flex; gap: 10px; }
+
+/* ============================================================
+   PAGE 4: 报税日历页
+   ============================================================ */
+.cal-page { background: var(--bg); min-height: 100%; }
+
+.cal-hdr { background: var(--primary); color: white; padding: 16px 20px 20px; }
+.cal-nav {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+}
+.cal-nav button {
+  width: 36px; height: 36px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.2); color: white; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.cal-nav button:hover { background: rgba(255,255,255,0.3); }
+.cal-nav button:disabled { opacity: 0.4; cursor: not-allowed; }
+.cal-mth { font-size: 17px; font-weight: 600; }
+
+.cal-wks {
+  display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;
+}
+.cal-wk { font-size: 11px; color: rgba(255,255,255,0.6); padding: 3px 0; font-weight: 500; }
+
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; }
+.cal-d {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: rgba(255,255,255,0.8); border-radius: 50%;
+  cursor: pointer; position: relative; transition: background 0.15s; font-weight: 500;
+}
+.cal-d.empty { cursor: default; }
+.cal-d:hover:not(.empty) { background: rgba(255,255,255,0.15); }
+.cal-d.today { background: rgba(255,255,255,0.3); font-weight: 700; }
+.cal-d.dead { background: var(--danger); color: white; font-weight: 700; }
+.cal-d.dead::after {
+  content: ''; position: absolute; bottom: 2px; left: 50%;
+  transform: translateX(-50%); width: 4px; height: 4px;
+  border-radius: 50%; background: white;
+}
+.cal-d.dead.today { box-shadow: 0 0 0 3px rgba(224,49,49,0.45); }
+
+/* 申报项列表 */
+.tlist { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.tlist-hd { font-size: 16px; font-weight: 700; color: #1a1a2e; display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+.titem { background: var(--card); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+.titem-hd { display: flex; align-items: center; gap: 10px; padding: 13px 14px; cursor: pointer; }
+.udot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.udot.urg { background: var(--danger); }
+.udot.warn { background: var(--accent); }
+.udot.tip { background: var(--success); }
+.tico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tico.b { background: #EEF1FF; color: var(--primary); }
+.tico.o { background: #FFF8E1; color: #E67700; }
+.tico.g { background: #EBFBEE; color: #2B8A3E; }
+.ti { flex: 1; }
+.tinm { font-size: 16px; font-weight: 600; color: #1a1a2e; }
+.tides { font-size: 13px; color: var(--text-muted); margin-top: 1px; }
+.tidtl { padding: 0 14px 13px; display: flex; flex-direction: column; gap: 6px; }
+.tirow { display: flex; justify-content: space-between; align-items: center; }
+.tirow-l { font-size: 13px; color: var(--text-muted); }
+.tirow-r { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+.tirow-r.red { color: var(--danger); }
+.tirow-r.orange { color: #E67700; }
+
+/* 提醒样式 */
+.urg-banner {
+  background: linear-gradient(135deg, #FFF5F5, #FFF0F0);
+  border-left: 3px solid var(--danger); padding: 10px 14px;
+  font-size: 13px; color: var(--danger); font-weight: 500;
+  display: flex; align-items: center; gap: 6px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.warn-banner {
+  background: linear-gradient(135deg, #FFFBEB, #FFF8E1);
+  border-left: 3px solid var(--accent); padding: 10px 14px;
+  font-size: 13px; color: #B45309; font-weight: 500;
+  display: flex; align-items: center; gap: 6px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* ============================================================
+   错误状态
+   ============================================================ */
+.err-state {
+  padding: 20px; display: flex; flex-direction: column;
+  align-items: center; gap: 10px; text-align: center;
+}
+.err-icon { width: 56px; height: 56px; background: #FFF5F5; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.err-state h4 { font-size: 16px; font-weight: 600; color: #1a1a2e; }
+.err-state p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+/* ============================================================
+   响应式处理（确保375px内展示完美）
+   ============================================================ */
+@media (max-width: 375px) {
+  .page-wrap { border-radius: 0; }
+  body { padding: 0; }
+}
+
+<!-- ============================================================
+     PAGE CONTENT (all 4 pages)
+     ============================================================ -->
+
+<!-- ============================================================
+     PAGE 1-1: 冷启动 Step1 - 统一社会信用代码
+     ============================================================ -->
+<div class="page-wrap" id="p1s1">
+  <div class="onboard">
+    <!-- 顶部幽灵导航 -->
+    <div class="nav nav-ghost" style="position:relative;background:transparent;border:none;z-index:10;">
+      <div style="width:44px;height:44px;"></div>
+      <div class="nav-title" style="color:rgba(255,255,255,0.9);font-size:17px;font-weight:600;">企业绑定</div>
+      <div style="width:44px;height:44px;"></div>
+    </div>
+
+    <!-- 步骤指示器 -->
+    <div class="steps">
+      <div class="sd on"></div>
+      <div class="sc"></div>
+      <div class="sd"></div>
+      <div class="sc"></div>
+      <div class="sd"></div>
+    </div>
+
+    <!-- 英雄区 -->
+    <div class="ob-hero">
+      <div class="ob-logo">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <div class="ob-title">欢迎使用 AICFO</div>
+      <div class="ob-sub">绑定您的企业，开始智能财税管理之旅</div>
+    </div>
+
+    <!-- 表单 -->
+    <div class="ob-body">
+      <div>
+        <label class="lbl">统一社会信用代码</label>
+        <input class="inp" type="text" placeholder="请输入18位统一社会信用代码" maxlength="18" value="91320106MA1XXXXX" />
+        <div class="err-msg" id="p1s1-err" style="display:none;">请输入正确的18位统一社会信用代码</div>
+      </div>
+
+      <div class="ob-divider">或</div>
+
+      <button class="scan-btn" type="button">
+        <svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+          <rect x="7" y="7" width="10" height="10" rx="1"/>
+        </svg>
+        扫描营业执照二维码
+      </button>
+
+      <div style="margin-top:auto;">
+        <button class="btn btn-p btn-full btn-lg" type="button" onclick="showP1S2()">下一步</button>
+        <p style="text-align:center;font-size:13px;color:var(--text-muted);margin-top:12px;">绑定即表示同意 <a href="#" style="color:var(--primary);text-decoration:none;">《服务协议》</a> 与 <a href="#" style="color:var(--primary);text-decoration:none;">《隐私政策》</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 1-2: 冷启动 Step2 - 企业信息确认
+     ============================================================ -->
+<div class="page-wrap" id="p1s2" style="display:none;">
+  <div class="onboard">
+    <div class="nav">
+      <button class="nav-back" onclick="showP1S1()" type="button">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="nav-title">企业信息确认</div>
+      <div style="width:44px;"></div>
+    </div>
+
+    <div class="steps">
+      <div class="sd done"></div>
+      <div class="sc done"></div>
+      <div class="sd on"></div>
+      <div class="sc"></div>
+      <div class="sd"></div>
+    </div>
+
+    <div class="ob-body">
+      <div style="padding:0 4px;">
+        <p style="font-size:15px;color:var(--secondary);line-height:1.7;margin-bottom:6px;">我们从工商数据库获取到以下信息，请确认是否正确：</p>
+      </div>
+
+      <div class="cinfo-row c" style="padding:16px;">
+        <div>
+          <div class="cinfo-lbl">企业名称</div>
+          <div class="cinfo-val" style="margin-top:4px;">南京智创科技有限公司</div>
+        </div>
+        <span class="bdg bdg-g">已认证</span>
+      </div>
+
+      <div class="c" style="padding:0 16px;">
+        <div class="cinfo-row">
+          <span class="cinfo-lbl">统一社会信用代码</span>
+          <span class="cinfo-val">91320106MA1XXXXX</span>
+        </div>
+        <div class="cinfo-row">
+          <span class="cinfo-lbl">法定代表人</span>
+          <span class="cinfo-val">张明</span>
+        </div>
+        <div class="cinfo-row">
+          <span class="cinfo-lbl">注册资本</span>
+          <span class="cinfo-val">100万元</span>
+        </div>
+        <div class="cinfo-row">
+          <span class="cinfo-lbl">成立日期</span>
+          <span class="cinfo-val">2019-03-15</span>
+        </div>
+        <div class="cinfo-row">
+          <span class="cinfo-lbl">营业期限</span>
+          <span class="cinfo-val">2019-03-15 至 长期</span>
+        </div>
+        <div class="cinfo-row">
+          <span class="cinfo-lbl">注册地址</span>
+          <span class="cinfo-val">南京市鼓楼区中山路1号</span>
+        </div>
+        <div class="cinfo-row">
+          <span class="cinfo-lbl">纳税类型</span>
+          <span class="cinfo-val"><span class="bdg bdg-b">小规模纳税人</span></span>
+        </div>
+      </div>
+
+      <!-- 错误状态：信息不一致 -->
+      <div class="err-state" id="p1s2-err" style="display:none;">
+        <div class="err-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E03131" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h4>信息不一致</h4>
+        <p>查询到的企业信息与您输入的不匹配，请检查统一社会信用代码是否正确，或<a href="#" style="color:var(--primary);">手动填写</a></p>
+      </div>
+
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-p btn-full btn-lg" type="button" onclick="showP1S3()">信息正确，继续</button>
+        <button class="btn btn-g btn-full" type="button" onclick="document.getElementById('p1s2-err').style.display='flex'">信息有误</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 1-3: 冷启动 Step3 - 初始化方式选择
+     ============================================================ -->
+<div class="page-wrap" id="p1s3" style="display:none;">
+  <div class="onboard">
+    <div class="nav">
+      <button class="nav-back" onclick="showP1S2()" type="button">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="nav-title">初始化设置</div>
+      <div style="width:44px;"></div>
+    </div>
+
+    <div class="steps">
+      <div class="sd done"></div>
+      <div class="sc done"></div>
+      <div class="sd done"></div>
+    </div>
+
+    <div class="ob-body">
+      <div style="padding:0 4px;">
+        <p style="font-size:15px;color:var(--secondary);line-height:1.7;">南京智创科技有限公司 初始化方式选择：</p>
+      </div>
+
+      <div class="mth-list">
+        <div class="mth-card sel" id="m1" onclick="selMethod('m1')">
+          <div class="mth-icon b">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          </div>
+          <div class="mth-txt">
+            <div class="mth-ttl">从零开始</div>
+            <div class="mth-desc">全新初始化，从当前月份开始记账，无历史数据</div>
+          </div>
+          <div class="mth-chk"></div>
+        </div>
+
+        <div class="mth-card" id="m2" onclick="selMethod('m2')">
+          <div class="mth-icon o">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+          </div>
+          <div class="mth-txt">
+            <div class="mth-ttl">旧系统导入</div>
+            <div class="mth-desc">从用友、金蝶等财务软件导出数据后一键导入</div>
+          </div>
+          <div class="mth-chk"></div>
+        </div>
+
+        <div class="mth-card" id="m3" onclick="selMethod('m3')">
+          <div class="mth-icon g">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div class="mth-txt">
+            <div class="mth-ttl">银行流水导入</div>
+            <div class="mth-desc">授权网银，AI自动解析银行流水生成凭证</div>
+          </div>
+          <div class="mth-chk"></div>
+        </div>
+      </div>
+
+      <!-- Loading状态 -->
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:auto;" id="p1s3-actions">
+        <button class="btn btn-p btn-full btn-lg" id="p1s3-btn" type="button" onclick="initLoading()">确认初始化</button>
+        <button class="btn btn-g btn-full" type="button" onclick="showP1S2()">返回修改</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 2: AI对话页
+     ============================================================ -->
+<div class="page-wrap" id="p2" style="display:none;background:var(--bg);">
+  <div class="chat-page">
+    <!-- 导航 -->
+    <div class="chat-hdr">
+      <button class="nav-back" onclick="showP1S3()" type="button" style="margin-left:-8px;">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div style="flex:1;">
+        <div class="chat-co">南京智创科技有限公司</div>
+      </div>
+      <span class="bdg bdg-b" style="font-size:11px;padding:2px 8px;">小规模</span>
+      <button class="nav-action" type="button" style="margin-right:-8px;">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+
+    <!-- 对话体 -->
+    <div class="chat-body" id="chat-body">
+
+      <!-- 空状态 -->
+      <div class="empty-state" id="chat-empty">
+        <div class="empty-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>有什么财税问题尽管问我</h3>
+        <p>我可以帮您记账、查税、生成凭证，<br/>也可以回答各类财税问题</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px;">
+          <button class="btn btn-sm btn-s" onclick="addQuickMsg('这个月收入多少？')">这个月收入多少？</button>
+          <button class="btn btn-sm btn-s" onclick="addQuickMsg('帮我记一笔报销')">帮我记一笔报销</button>
+          <button class="btn btn-sm btn-s" onclick="addQuickMsg('这个月要报什么税')">这个月要报什么税</button>
+        </div>
+      </div>
+
+      <!-- 日期分隔 -->
+      <div class="date-div"><span>今天 3月25日</span></div>
+
+      <!-- AI气泡 -->
+      <div class="br ai" id="ai-bubble-1">
+        <div class="av av-ai">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="bub">
+          <div class="bub-txt">您好！我是AICFO财税助手，已为您准备好了3月份的账务模板。请问您今天有什么需要记录的？</div>
+        </div>
+      </div>
+
+      <!-- 用户气泡 -->
+      <div class="br u">
+        <div class="av av-u"></div>
+        <div class="bub">
+          <div class="bub-txt">收到客户货款50000元，是预付款</div>
+        </div>
+      </div>
+
+      <!-- AI回复带凭证草稿 -->
+      <div class="br ai" id="ai-bubble-2">
+        <div class="av av-ai">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="bub">
+          <div class="bub-txt">好的，已识别为预收货款。根据您的小规模纳税人身份，已自动生成如下记账凭证草稿：</div>
+
+          <!-- 凭证草稿卡片 -->
+          <div class="vd-card">
+            <div class="vd-hdr">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              凭证草稿 · 待确认
+            </div>
+            <div class="vd-body">
+              <div class="vd-row">
+                <span class="dc-tag dr">借</span>
+                <span class="vd-acct">1122 应收账款</span>
+                <span class="vd-amt">¥50,000.00</span>
+              </div>
+              <div class="vd-row">
+                <span class="dc-tag cr">贷</span>
+                <span class="vd-acct">2202 预收账款</span>
+                <span class="vd-amt">¥50,000.00</span>
+              </div>
+            </div>
+            <div class="vd-ft">
+              <button class="btn btn-g btn-sm" onclick="editDraft()">修改</button>
+              <button class="btn btn-p btn-sm" onclick="confirmDraft()">确认入账</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 打字中 -->
+      <div class="br ai" id="typing-row" style="display:none;">
+        <div class="av av-ai">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="typing">
+          <div class="td"></div><div class="td"></div><div class="td"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 底部输入 -->
+    <div class="chat-ft">
+      <div class="chat-inp-wrap">
+        <textarea class="chat-inp" id="chat-input" rows="1" placeholder="描述您要记录的财税事项..." oninput="autoResize(this)" onkeydown="handleEnter(event)"></textarea>
+      </div>
+      <button class="cibtn" type="button" title="拍照发票">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </button>
+      <button class="cibtn" type="button" title="语音输入">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <button class="cibtn send" type="button" title="发送" onclick="sendMsg()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 3: 凭证确认页
+     ============================================================ -->
+<div class="page-wrap" id="p3" style="display:none;">
+  <div class="vs-page">
+    <!-- 顶部状态栏 -->
+    <div class="vs-status-bar">
+      <div>
+        <div class="lbl">凭证状态</div>
+        <div class="val">待确认</div>
+        <div class="vs-no">凭证号：记-2026-03-001</div>
+      </div>
+      <span class="bdg bdg-w">草稿</span>
+    </div>
+
+    <!-- 导航 -->
+    <div class="nav">
+      <button class="nav-back" type="button" onclick="showP2()">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="nav-title">凭证详情</div>
+      <button class="nav-action" type="button">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+
+    <!-- 状态流转 -->
+    <div class="sts-flow">
+      <div class="sts-stp done">
+        <div class="sts-ic">✓</div>
+        <div class="sts-lbl">草稿</div>
+      </div>
+      <div class="sts-stp on">
+        <div class="sts-ic">2</div>
+        <div class="sts-lbl">待确认</div>
+      </div>
+      <div class="sts-stp">
+        <div class="sts-ic">3</div>
+        <div class="sts-lbl">已入账</div>
+      </div>
+      <div class="sts-stp">
+        <div class="sts-ic">4</div>
+        <div class="sts-lbl">已归档</div>
+      </div>
+    </div>
+
+    <div class="page-scroll">
+      <!-- 表单 -->
+      <div class="vs-form">
+        <div class="vs-row">
+          <div class="ffd">
+            <span class="flbl">凭证日期</span>
+            <div class="fval ed">2026-03-25 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+          </div>
+          <div class="ffd">
+            <span class="flbl">凭证编号</span>
+            <div class="fval">记-2026-03-001</div>
+          </div>
+        </div>
+
+        <div class="ffd f">
+          <span class="flbl">摘要</span>
+          <div class="fval ed">收到客户预付货款 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+        </div>
+
+        <!-- 借贷明细 -->
+        <div class="dc-sec">
+          <div class="dc-hd">
+            <span></span><span>借方科目</span><span style="text-align:right;">贷方科目</span>
+          </div>
+          <div class="dc-row">
+            <span class="dc-tt dr">借</span>
+            <span class="dc-ac">1122 应收账款</span>
+            <span class="dc-am">¥50,000.00</span>
+          </div>
+          <div class="dc-row">
+            <span class="dc-tt cr">贷</span>
+            <span class="dc-ac">2202 预收账款</span>
+            <span class="dc-am">¥50,000.00</span>
+          </div>
+          <div class="dc-total">
+            <span></span>
+            <span class="dc-ac" style="font-weight:600;color:var(--secondary);">合计</span>
+            <span class="dc-am">¥50,000.00</span>
+          </div>
+        </div>
+
+        <!-- 附件 -->
+        <div class="ffd f">
+          <span class="flbl">附件</span>
+          <div class="attach" onclick="alert('上传附件')">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            <span>点击上传发票/收据等附件</span>
+          </div>
+        </div>
+
+        <div class="vs-row">
+          <div class="ffd">
+            <span class="flbl">制单人</span>
+            <div class="fval">张明（AI辅助）</div>
+          </div>
+          <div class="ffd">
+            <span class="flbl">审核人</span>
+            <div class="fval" style="color:var(--text-muted);">待审核</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disabled 状态示例（已入账） -->
+      <div style="padding:0 16px 8px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+          <div style="width:16px;height:16px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <span style="font-size:14px;font-weight:600;color:#1a1a2e;">已入账凭证（禁用状态）</span>
+        </div>
+        <div class="c" style="padding:12px;opacity:0.6;">
+          <div class="vs-row" style="margin-bottom:8px;">
+            <div class="ffd">
+              <span class="flbl">凭证日期</span>
+              <div class="fval" style="background:#F1F3F5;">2026-03-20</div>
+            </div>
+            <div class="ffd">
+              <span class="flbl">凭证编号</span>
+              <div class="fval" style="background:#F1F3F5;">记-2026-03-000</div>
+            </div>
+          </div>
+          <div class="ffd f" style="margin-bottom:8px;">
+            <span class="flbl">摘要</span>
+            <div class="fval" style="background:#F1F3F5;">购买办公用品</div>
+          </div>
+          <div class="bdg bdg-g" style="font-size:11px;">已入账 · 不可修改</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部操作 -->
+    <div class="vs-ft">
+      <button class="btn btn-g" type="button" onclick="showP2()">返回对话</button>
+      <button class="btn btn-p" style="flex:2;" type="button" onclick="confirmVoucher()">确认入账</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 4: 报税日历页
+     ============================================================ -->
+<div class="page-wrap" id="p4" style="display:none;">
+  <div class="cal-page">
+    <!-- 顶部导航 -->
+    <div class="nav" style="background:transparent;border:none;position:absolute;top:0;left:0;right:0;z-index:10;">
+      <div style="width:44px;"></div>
+      <div class="nav-title" style="color:white;">报税日历</div>
+      <button class="nav-action" style="margin-right:4px;" type="button">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </button>
+    </div>
+
+    <!-- 月历 -->
+    <div class="cal-hdr">
+      <div class="cal-nav">
+        <button type="button" onclick="prevMonth()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="cal-mth">2026年3月</div>
+        <button type="button" onclick="nextMonth()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+      <div class="cal-wks">
+        <div class="cal-wk">日</div><div class="cal-wk">一</div><div class="cal-wk">二</div>
+        <div class="cal-wk">三</div><div class="cal-wk">四</div><div class="cal-wk">五</div><div class="cal-wk">六</div>
+      </div>
+      <div class="cal-grid" id="cal-grid">
+        <!-- JS渲染 -->
+      </div>
+    </div>
+
+    <div class="page-scroll">
+      <!-- 紧急提醒 -->
+      <div style="padding:14px 16px 0;">
+        <div class="urg-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          增值税季报截止还有 <strong>3天</strong>，请尽快处理！
+        </div>
+      </div>
+
+      <!-- 申报项列表 -->
+      <div class="tlist">
+
+        <!-- 已过期项 -->
+        <div class="titem">
+          <div class="titem-hd">
+            <div class="udot urg"></div>
+            <div class="tico o">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div class="ti">
+              <div class="tinm">个人所得税汇算清缴 <span class="bdg bdg-r" style="font-size:10px;padding:1px 6px;margin-left:4px;">已逾期</span></div>
+              <div class="tides">2025年度 | 截止 3月20日</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="tidtl">
+            <div class="tirow">
+              <span class="tirow-l">逾期天数</span>
+              <span class="tirow-r red">已逾期 5 天</span>
+            </div>
+            <button class="btn btn-danger btn-sm btn-full" type="button">立即处理</button>
+          </div>
+        </div>
+
+        <!-- 即将到期 -->
+        <div class="titem">
+          <div class="titem-hd">
+            <div class="udot warn"></div>
+            <div class="tico b">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </div>
+            <div class="ti">
+              <div class="tinm">增值税及附加税费申报 <span class="bdg bdg-o" style="font-size:10px;padding:1px 6px;margin-left:4px;">🚨 紧急</span></div>
+              <div class="tides">季报 | 小规模纳税人 | Q1</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="tidtl">
+            <div class="tirow">
+              <span class="tirow-l">截止日期</span>
+              <span class="tirow-r orange">3月28日（还有3天）</span>
+            </div>
+            <div class="tirow">
+              <span class="tirow-l">申报周期</span>
+              <span class="tirow-r">2026-01-01 至 2026-03-31</span>
+            </div>
+            <button class="btn btn-p btn-full btn-sm" type="button">开始申报</button>
+          </div>
+        </div>
+
+        <!-- 一般到期 -->
+        <div class="titem">
+          <div class="titem-hd">
+            <div class="udot warn"></div>
+            <div class="tico g">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="ti">
+              <div class="tinm">企业所得税预缴申报</div>
+              <div class="tides">季报 | 预缴Q1企业所得税</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="tidtl">
+            <div class="tirow">
+              <span class="tirow-l">截止日期</span>
+              <span class="tirow-r">3月31日（还有6天）</span>
+            </div>
+            <div class="tirow">
+              <span class="tirow-l">适用税率</span>
+              <span class="tirow-r">5%（小微优惠）</span>
+            </div>
+            <button class="btn btn-s btn-full btn-sm" type="button">查看详情</button>
+          </div>
+        </div>
+
+        <!-- 提示项 -->
+        <div class="titem">
+          <div class="titem-hd">
+            <div class="udot tip"></div>
+            <div class="tico b">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            </div>
+            <div class="ti">
+              <div class="tinm">社保费申报 <span class="bdg bdg-g" style="font-size:10px;padding:1px 6px;margin-left:4px;">⚠️ 提示</span></div>
+              <div class="tides">每月15日前 | 3月截止 3月15日</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+          <div class="tidtl">
+            <div class="tirow">
+              <span class="tirow-l">申报周期</span>
+              <span class="tirow-r">2026-03-01 至 2026-03-31</span>
+            </div>
+            <div class="warn-banner" style="margin-top:4px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              3月起社保基数调整，请核实员工工资
+            </div>
+          </div>
+        </div>
+
+        <!-- 4月预览 -->
+        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+          <div style="width:16px;height:16px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span style="font-size:14px;font-weight:600;color:#1a1a2e;">已完成的申报</span>
+        </div>
+        <div class="titem" style="opacity:0.65;">
+          <div class="titem-hd">
+            <div class="udot" style="background:var(--border);"></div>
+            <div class="tico g">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </div>
+            <div class="ti">
+              <div class="tinm" style="text-decoration:line-through;">增值税及附加（2月）</div>
+              <div class="tides">月报 | 已完成 2月22日</div>
+            </div>
+            <span class="bdg bdg-g">✓ 已完成</span>
+          </div>
+        </div>
+
+      </div><!-- /tlist -->
+    </div><!-- /page-scroll -->
+  </div><!-- /cal-page -->
+</div><!-- /page-wrap -->
+
+<!-- ============================================================
+     PAGE LABELS
+     ============================================================ -->
+<div class="page-label">页面1: 冷启动引导 · Step 1</div>
+<div class="page-label" style="color:rgba(255,255,255,0.3);">页面1: 冷启动引导 · Step 2</div>
+<div class="page-label" style="color:rgba(255,255,255,0.3);">页面1: 冷启动引导 · Step 3</div>
+<div class="page-label" style="color:rgba(255,255,255,0.3);">页面2: AI对话页</div>
+<div class="page-label" style="color:rgba(255,255,255,0.3);">页面3: 凭证确认页</div>
+<div class="page-label" style="color:rgba(255,255,255,0.3);">页面4: 报税日历页</div>
+
+<!-- ============================================================
+     JAVASCRIPT 交互逻辑
+     ============================================================ -->
+<script>
+// ---- 页面切换 ----
+function showP1S1(){ switchPage('p1s1'); }
+function showP1S2(){ switchPage('p1s2'); }
+function showP1S3(){ switchPage('p1s3'); }
+function showP2(){ switchPage('p2'); }
+function showP3(){ switchPage('p3'); }
+function showP4(){ switchPage('p4'); }
+
+function switchPage(id) {
+  var pages = ['p1s1','p1s2','p1s3','p2','p3','p4'];
+  pages.forEach(function(p){ document.getElementById(p).style.display='none'; });
+  document.getElementById(id).style.display='flex';
+  var labels = document.querySelectorAll('.page-label');
+  labels.forEach(function(l){ l.style.color='rgba(255,255,255,0.3)'; });
+  var idx = pages.indexOf(id);
+  if(labels[idx]) labels[idx].style.color='rgba(255,255,255,0.8)';
+}
+
+// ---- 初始化方式选择 ----
+function selMethod(id) {
+  var cards = ['m1','m2','m3'];
+  cards.forEach(function(c){ document.getElementById(c).classList.remove('sel'); });
+  document.getElementById(id).classList.add('sel');
+}
+
+// ---- Loading 状态 ----
+function initLoading() {
+  var btn = document.getElementById('p1s3-btn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  btn.textContent = '初始化中...';
+  setTimeout(function(){
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    btn.textContent = '初始化完成 ✓';
+    btn.style.background = 'var(--success)';
+    btn.style.boxShadow = '0 4px 12px rgba(55,178,76,0.3)';
+    setTimeout(function(){ showP2(); }, 800);
+  }, 2000);
+}
+
+// ---- 对话页 ----
+function sendMsg() {
+  var inp = document.getElementById('chat-input');
+  var txt = inp.value.trim();
+  if(!txt) return;
+  var body = document.getElementById('chat-body');
+
+  // 隐藏空状态
+  var empty = document.getElementById('chat-empty');
+  if(empty) empty.style.display = 'none';
+
+  // 用户气泡
+  var ub = document.createElement('div');
+  ub.className = 'br u';
+  ub.innerHTML = '<div class="av av-u"></div><div class="bub"><div class="bub-txt">'+escHtml(txt)+'</div></div>';
+  body.appendChild(ub);
+
+  inp.value = '';
+  inp.style.height = 'auto';
+
+  // 打字动画
+  var typing = document.getElementById('typing-row');
+  typing.style.display = 'flex';
+  body.appendChild(typing);
+  body.scrollTop = body.scrollHeight;
+
+  // AI 回复
+  setTimeout(function(){
+    typing.style.display = 'none';
+    var aiB = document.createElement('div');
+    aiB.className = 'br ai';
+    aiB.innerHTML = '<div class="av av-ai"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>' +
+      '<div class="bub"><div class="bub-txt">好的，我已经记录了「' + escHtml(txt) + '」。如果您需要生成正式凭证，请点击下方「确认入账」或继续描述其他事项。</div></div>';
+    body.appendChild(aiB);
+    body.scrollTop = body.scrollHeight;
+  }, 1800);
+}
+
+function addQuickMsg(txt) {
+  document.getElementById('chat-input').value = txt;
+  sendMsg();
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleEnter(e) {
+  if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+
+function editDraft() { showP3(); }
+function confirmDraft() { alert('凭证已确认入账！'); showP3(); }
+function confirmVoucher() {
+  var btn = event.target;
+  btn.classList.add('loading');
+  btn.textContent = '';
+  setTimeout(function(){
+    btn.classList.remove('loading');
+    btn.textContent = '已入账 ✓';
+    btn.style.background='var(--success)';
+    btn.style.boxShadow='0 4px 12px rgba(55,178,76,0.3)';
+    setTimeout(function(){ showP2(); }, 800);
+  }, 1500);
+}
+
+// ---- 凭证页：disabled状态切换 ----
+function toggleVoucherEdit() {
+  var vals = document.querySelectorAll('.fval.ed');
+  vals.forEach(function(v){
+    var inp = v.querySelector('input');
+    if(!inp){
+      var cur = v.childNodes[0].textContent.trim();
+      v.innerHTML = '<input class="inp" style="min-height:36px;padding:6px 10px;font-size:15px;" value="'+cur+'" />';
+      inp = v.querySelector('input');
+      inp.focus();
+      inp.onblur = function(){
+        v.innerHTML = this.value + ' <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+      };
+    }
+  });
+}
+
+// ---- 日历渲染 ----
+var calMonth = 2; // 0=2月, 1=3月 (当前展示3月)
+var calYear = 2026;
+var months = ['2026年2月','2026年3月'];
+var calData = {
+  0: { // 2月
+    start: 6, // 周六开始 (2月1日)
+    days: 28,
+    deadlines: [22] // 2月22日截止
+  },
+  1: { // 3月
+    start: 0, // 周日
+    days: 31,
+    deadlines: [20, 28] // 3月20日已过, 3月28日截止
+  }
+};
+
+function renderCal() {
+  var data = calData[calMonth];
+  var grid = document.getElementById('cal-grid');
+  var html = '';
+  var today = calMonth===1 ? 25 : -1; // 今天是3月25日
+  // 空白格
+  for(var i=0;i<data.start;i++){ html+='<div class="cal-d empty"></div>'; }
+  for(var d=1;d<=data.days;d++){
+    var cls = 'cal-d';
+    if(d===today) cls+=' today';
+    if(data.deadlines.indexOf(d)!==-1) cls+=' dead';
+    html+='<div class="'+cls+'" onclick="calDayClick('+d+')">'+d+'</div>';
+  }
+  grid.innerHTML = html;
+  document.querySelector('.cal-mth').textContent = months[calMonth];
+}
+
+function calDayClick(d) {
+  var data = calData[calMonth];
+  if(data.deadlines.indexOf(d)!==-1){
+    alert('查看 '+months[calMonth].replace('年','-').replace('月','')+String(d).padStart(2,'0')+' 的申报详情');
+  }
+}
+
+function prevMonth(){
+  calMonth = 0; renderCal();
+  document.querySelectorAll('.cal-nav button')[0].disabled = true;
+  document.querySelectorAll('.cal-nav button')[1].disabled = false;
+}
+function nextMonth(){
+  calMonth = 1; renderCal();
+  document.querySelectorAll('.cal-nav button')[0].disabled = false;
+  document.querySelectorAll('.cal-nav button')[1].disabled = true;
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// 初始化
+renderCal();
+</script>
+
+</body>
+</html>
