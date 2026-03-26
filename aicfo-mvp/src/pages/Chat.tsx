@@ -390,13 +390,13 @@ export default function Chat() {
       {/* 输入区域 - 微信风格 */}
       <div
         className="shrink-0 flex items-center justify-center"
-        style={{ backgroundColor: '#F7F7F7', borderTop: '1px solid #E5E5E5', padding: '2px 8px', paddingBottom: 'calc(2px + env(safe-area-inset-bottom))', minHeight: '44px' }}
+        style={{ backgroundColor: '#F7F7F7', borderTop: '1px solid #E5E5E5', padding: '6px 8px', minHeight: '48px' }}
       >
         <div className="flex items-center gap-2 w-full">
           {/* 左侧 + 号按钮 */}
           <button
             onClick={() => setShowAttachMenu(true)}
-            className="w-[28px] h-[28px] rounded-full flex items-center justify-center shrink-0"
+            className="w-[32px] h-[32px] rounded-full flex items-center justify-center shrink-0"
             style={{ backgroundColor: '#FFFFFF', border: '1px solid #D9D9D9' }}
           >
             <span style={{ color: '#7F7F7F', fontSize: '18px', lineHeight: '1' }}>+</span>
@@ -410,16 +410,17 @@ export default function Chat() {
               onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
               placeholder="发送消息..."
               rows={1}
-              className="w-full resize-none rounded-[4px] px-3 text-[15px]"
+              className="w-full resize-none rounded-[4px] text-[15px]"
               style={{ 
                 backgroundColor: '#FFFFFF', 
                 border: 'none',
                 color: '#1A1A1A', 
-                minHeight: '36px', 
+                height: '34px',
+                minHeight: '34px', 
                 maxHeight: '80px',
                 outline: 'none',
-                lineHeight: '20px',
-                padding: '8px 8px'
+                lineHeight: '18px',
+                padding: '8px'
               }}
             />
           </div>
@@ -432,7 +433,7 @@ export default function Chat() {
             style={{ 
               backgroundColor: input.trim() && !isTyping ? '#07C160' : '#E0E0E0', 
               color: input.trim() && !isTyping ? '#FFFFFF' : '#999999',
-              height: '36px'
+              height: '34px'
             }}
           >
             发送
