@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    --color-primary: #3B5BDB;
+    --color-secondary: #495057;
+    --color-accent: #F59F00;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+}
+
+/* 隐藏滚动条 */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 凭证分录借贷颜色 */
+.text-debit {
+  color: #3B5BDB;
+}
+.text-credit {
+  color: #F59F00;
+}
+
+/* ============================================================
+ * Uiverse-Inspired Skeleton Animations
+ * 骨架屏闪烁动画（柔和灰度渐变）
+ * ============================================================ */
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-pulse {
+  background: linear-gradient(90deg, #F0F0F0 25%, #E8E8E8 50%, #F0F0F0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+/* ============================================================
+ * Uiverse-Inspired Hover Effects
+ * 微妙的悬浮效果（不过度动画）
+ * ============================================================ */
+.card-hover {
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.card-hover:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.card-hover:active {
+  transform: scale(0.98);
+}
+
+/* ============================================================
+ * Typing Indicator Dots
+ * AI 输入提示动画（已在 Tailwind 中定义，这里做增强）
+ * ============================================================ */
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40%          { transform: translateY(-4px); }
+}
+
+.dot-bounce > span {
+  animation: dot-bounce 1.2s ease-in-out infinite;
+}
+
+/* ============================================================
+ * AI Typing Dot Animation
+ * 更流畅的输入提示动画
+ * ============================================================ */
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30%           { transform: translateY(-5px); opacity: 1; }
+}
+
+/* 动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s ease-out;
+}
